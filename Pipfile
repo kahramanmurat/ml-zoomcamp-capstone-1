@@ -6,6 +6,10 @@ name = "pypi"
 [packages]
 pillow = "*"
 requests = "*"
+pandas = "*"
+scikit-learn = "*"
+flask = "*"
+gunicorn = "*"
 
 [dev-packages]
 
