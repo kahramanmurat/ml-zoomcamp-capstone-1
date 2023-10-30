@@ -25,7 +25,7 @@ output_file = f"model_C={C}.bin"
 
 # data preparation
 
-df = pd.read_csv("creditcard_2023.csv")
+df = pd.read_csv("data/creditcard_2023.csv")
 
 df.columns = df.columns.str.lower().str.replace(" ", "_")
 
