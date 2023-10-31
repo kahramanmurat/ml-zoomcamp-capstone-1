@@ -102,7 +102,7 @@ python predict-test.py
 
 Locally, user should be able to get a similar output to the one shown below upon running all steps successfully.
 
-![sample_output](output.JPG)
+![sample_output](output.png)
 
 ## Acknowledgement
 
