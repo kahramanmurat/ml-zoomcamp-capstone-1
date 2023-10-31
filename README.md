@@ -38,7 +38,7 @@ docker build -t {build-tag} .
 ```
 
 ```
-docker run -it --rm -p 8080:8080 {build-tag}
+docker run -it -p 9696:9696 {build-tag}
 ```
 
 `{build-tag}`: Specifies any user-defined tag for docker image. eg. `credit-card`
@@ -77,32 +77,11 @@ By default, the patient parameters are set at:
     "v26": -0.8576888198591994,
     "v27": -0.0157900366683944,
     "v28": 0.3666313324560797,
-    "amount": 8273.81,
-    "class": 0.0
+    "amount": 8273.81
 ```
 User may change the parameters to test out different scenarios by changing values or parameters in `predict-test.py`
 
-#### Allowed parameters for features (with restrictions):
-
-- gender: male/female
-- diabetes - yes/no
-- family_history - yes/no
-- smoking - yes/no
-- obesity - yes/no
-- alcohol_consumption - none/light/moderate/heavy
-- diet - healthy/average/unhealthy
-- previous_heart_problems - yes/no
-- medication_use - yes/no
-- stress_level - 1-10
-- sedentary_hours_per_day - 0-24
-- physical_activity_days_per_week - 0-7
-- sleep_hours_per_day - 0-24
-- country - One of ['Argentina', 'Nigeria', 'Thailand', 'Spain', 'Germany', 'France',
-       'South Africa', 'Colombia', 'Italy', 'China', 'Vietnam',
-       'United States', 'Japan', 'Canada', 'India', 'United Kingdom',
-       'New Zealand', 'Brazil', 'South Korea', 'Australia']
-
-Once, user is happy with patient input, predictions can be made in a new console window inside the project folder.
+Once, user is happy with credit card transaction input, predictions can be made in a new console window inside the project folder.
 
 ```python
 python predict-test.py
@@ -110,7 +89,7 @@ python predict-test.py
 
 ## Sample Output
 
-Locally, user shoudl be able to get a similar output to the one shown below upon running all steps successfully.
+Locally, user should be able to get a similar output to the one shown below upon running all steps successfully.
 
 ![sample_output](output.JPG)
 
