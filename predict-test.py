@@ -37,8 +37,7 @@ credit_card = {
     "v26": -0.8576888198591994,
     "v27": -0.0157900366683944,
     "v28": 0.3666313324560797,
-    "amount": 8273.81,
-    "class": 0.0,
+    "amount": 8273.81
 }
 
 
@@ -46,6 +45,6 @@ response = requests.post(url, json=credit_card).json()
 print(response)
 
 if response["fraud"] == True:
-    print("card cancelled %s" % credit_card)
+    print("fraud activity detected %s")
 else:
-    print("no action %s" % credit_card)
+    print("no fraud activity %s")
