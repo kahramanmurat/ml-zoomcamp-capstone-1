@@ -29,8 +29,6 @@ git clone https://github.com/kahramanmurat/ml-zoomcamp-capstone-1.git
 
 ### Acquiring Data
 
-### Acquiring Data
-
 To access the dataset used for this project, please follow these steps:
 
 1. Go to the following link to download the dataset:
