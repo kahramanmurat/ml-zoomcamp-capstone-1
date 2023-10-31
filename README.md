@@ -110,4 +110,4 @@ The project has been possible with the help of a colaborative slack community of
 
 ## Feedback
 
-I am open to feedback from everyone as I am still learning and seeking ways to improve. Please provide a star incase you liked my work.
+I welcome feedback from all, as I am continuously learning and striving for improvement. If you appreciate my work, kindly consider giving it a star.
