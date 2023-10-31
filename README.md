@@ -29,7 +29,20 @@ git clone https://github.com/kahramanmurat/ml-zoomcamp-capstone-1.git
 
 ### Acquiring Data
 
-The data used for training the predictive model is stored in `data/creditcard_2023.csv` in this repo.
+### Acquiring Data
+
+To access the dataset used for this project, please follow these steps:
+
+1. Go to the following link to download the dataset:
+   [Credit Card Fraud Detection Dataset](https://www.kaggle.com/datasets/nelgiriyewithana/credit-card-fraud-detection-dataset-2023/data)
+
+2. Click on the provided link to visit the Kaggle dataset page.
+
+3. Download the dataset from the Kaggle platform.
+
+Please note that the dataset file is approximately 330MB in size, so ensure you have sufficient storage space and a stable internet connection for the download.
+
+Once you have downloaded the dataset, you can proceed with the project by using the acquired data for analysis and modeling.
 
 ### Using Docker Image
 
