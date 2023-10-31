@@ -19,7 +19,7 @@ from sklearn.metrics import roc_auc_score
 
 # parameters
 
-C = 1.0
+C = 0.1
 n_splits = 5
 output_file = f"model_C={C}.bin"
 
@@ -29,15 +29,15 @@ df = pd.read_csv("data/creditcard_2023.csv")
 
 df.columns = df.columns.str.lower().str.replace(" ", "_")
 
-columns = list(df.dtypes.index)[1:-2]
+columns = list(df.dtypes.index)[1:-1]
 
 df_full_train, df_test = train_test_split(df, test_size=0.2, random_state=1)
 
 # training
 
 
-def train(df_train, y_train, C=1.0):
-    dicts = df_train[columns].to_dict(orient="records")
+def train(df_train, y_train, C=C):
+    dicts = df_train.to_dict(orient="records")
 
     dv = DictVectorizer(sparse=False)
     X_train = dv.fit_transform(dicts)
@@ -49,7 +49,7 @@ def train(df_train, y_train, C=1.0):
 
 
 def predict(df, dv, model):
-    dicts = df[columns].to_dict(orient="records")
+    dicts = df.to_dict(orient="records")
 
     X = dv.transform(dicts)
     y_pred = model.predict_proba(X)[:, 1]
@@ -74,8 +74,8 @@ for train_idx, val_idx in kfold.split(df_full_train):
     y_train = df_train["class"].values
     y_val = df_val["class"].values
 
-    dv, model = train(df_train, y_train, C=C)
-    y_pred = predict(df_val, dv, model)
+    dv, model = train(df_train[columns], y_train, C=C)
+    y_pred = predict(df_val[columns], dv, model)
 
     auc = roc_auc_score(y_val, y_pred)
     scores.append(auc)
@@ -92,8 +92,8 @@ print("C=%s %.3f +- %.3f" % (C, np.mean(scores), np.std(scores)))
 
 print("training the final model")
 
-dv, model = train(df_full_train, df_full_train["class"].values, C=1.0)
-y_pred = predict(df_test, dv, model)
+dv, model = train(df_full_train[columns], df_full_train["class"].values, C=0.1)
+y_pred = predict(df_test[columns], dv, model)
 
 y_test = df_test["class"].values
 auc = roc_auc_score(y_test, y_pred)
