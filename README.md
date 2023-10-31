@@ -106,7 +106,7 @@ Locally, user should be able to get a similar output to the one shown below upon
 
 ## Acknowledgement
 
-The project has been possible with the help of a colaborative slack community of DataTalks and specially Alexey.
+This project became a reality thanks to the collaborative Slack community of DataTalks, with special gratitude to Alexey for their invaluable support.
 
 ## Feedback
 
