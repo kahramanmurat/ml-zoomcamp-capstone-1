@@ -1,13 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 import requests
-
 
 url = 'http://localhost:9696/predict'
 
-credit_card = {
-    "id":10000,
+customer = {
     "v1": -0.4784271960990545,
     "v2": 0.1421651242876125,
     "v3": -0.0468380289121661,
@@ -39,12 +34,18 @@ credit_card = {
     "amount": 1534.53
 }
 
-
-
-response = requests.post(url, json=credit_card).json()
-print(response)
-
-if response['fraud'] == True:
-    print('Your transaction is likely to have fraud ')
-else:
-    print('Everything seems ok with your transaction')
+try:
+    response = requests.post(url, json=customer)
+    response.raise_for_status()
+    result = response.json()
+    print(result)
+    if result['fraud']:
+        print('Fraud detected')
+    else:
+        print('No fraud')
+except requests.exceptions.RequestException as e:
+    print('Request error:', e)
+except requests.exceptions.HTTPError as e:
+    print('HTTP error:', e)
+except requests.exceptions.JSONDecodeError as e:
+    print('JSON decoding error:', e)

@@ -1,82 +1,75 @@
-import numpy as np
 import pandas as pd
-import pickle
-from sklearn import preprocessing
-from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import roc_auc_score, roc_curve
-import xgboost
-from xgboost import XGBClassifier
+import xgboost as xgb
 from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction import DictVectorizer
+from sklearn.metrics import roc_auc_score
+import pickle
+from sklearn.model_selection import KFold
 
-# parameters
-random_state = 1
-d = 5
-eta = 0.1
-n_estimators = 60 
-scale_pos_weight = 1
-output_file = 'xgb_model.bin'
+# Parameters
+data_file = "data/creditcard_2023.csv"
+output_file = "xgb_model.bin"
+xgb_params = {
+    'eta': 0.1,
+    'max_depth': 3,
+    'min_child_weight': 1,
+    'objective': 'binary:logistic',
+    'eval_metric': 'auc',
+    'nthread': 2,
+    'seed': 1,
+    'verbosity': 1
+}
+n_splits = 5
 
-# data preparation
+def train_model(df_train, xgb_params):
+    columns = list(df_train.columns[1:-1].values)
+    dicts = df_train[columns].to_dict(orient='records')
+    dv = DictVectorizer(sparse=False)
+    X_train = dv.fit_transform(dicts)
+    y_train = df_train["class"].values
+    dtrain = xgb.DMatrix(X_train, label=y_train, feature_names=columns)
+    model = xgb.train(xgb_params, dtrain, num_boost_round=13)
+    return dv, model
 
-df = pd.read_csv("data/creditcard_2023.csv")
+def predict_model(dv, model, df):
+    columns = list(df.columns[1:-1].values)
+    dicts = df[columns].to_dict(orient='records')
+    X = dv.transform(dicts)
+    dtest = xgb.DMatrix(X, feature_names=columns)
+    y_pred = model.predict(dtest)
+    return y_pred
 
-df.columns = df.columns.str.lower().str.replace(" ", "_")
-
-columns = list(df.dtypes.index)[1:-1]
-
-df_full_train, df_test = train_test_split(df, test_size=0.2, random_state=1)
-
-X = df_full_train.copy()
-y = X.pop("class")
-
-
-# Validation
-def cross_validation(model):
+def validate(df_full_train, n_splits, xgb_params):
+    kfold = KFold(n_splits=n_splits, shuffle=True, random_state=1)
+    scores = []
     
-    #initiate prediction arrays and score lists
-    train_scores, val_scores = [], []
-    kf = StratifiedKFold(shuffle=True, random_state=random_state, n_splits = 5)
+    for train_idx, val_idx in kfold.split(df_full_train):
+        df_train = df_full_train.iloc[train_idx]
+        df_val = df_full_train.iloc[val_idx]
+        dv, model = train_model(df_train, xgb_params)
+        y_pred = predict_model(dv, model, df_val)
+        auc = roc_auc_score(df_val["class"].values, y_pred)
+        scores.append(auc)
     
-    for fold, (train_idx, val_idx) in enumerate(kf.split(X, y)):
-        #Train dataset
-        X_train = X[columns].iloc[train_idx]
-        y_train = y.iloc[train_idx]
-        
-        #Validation dataset
-        X_val = X[columns].iloc[val_idx]
-        y_val = y.iloc[val_idx]
-                
-        #Train model    
-        model.fit(X_train, y_train)
-    
-        #Predictions
-        train_preds = model.predict_proba(X_train)[:, 1]
-        val_preds = model.predict_proba(X_val)[:, 1]
-    
-        #Evaluation for a fold
-        train_score = roc_auc_score(y_train, train_preds)
-        val_score = roc_auc_score(y_val, val_preds)
-    
-        #Saving the model score for a fold
-        train_scores.append(train_score)
-        val_scores.append(val_score)
-    
-    print(f'val score: {np.mean(val_scores):.5f} ± {np.std(val_scores):.5f} | train score: {np.mean(train_scores):.5f} ± {np.std(train_scores):.5f}')
-    return val_scores
- 
-model =  XGBClassifier(random_state = random_state,
-                        n_estimators = n_estimators,
-                        eta = eta, max_depth = d,
-                        scale_pos_weight = scale_pos_weight)
-score_list = cross_validation( model)
+    return scores
 
-#final model 
-XGBClassifier(random_state = random_state,
-                        n_estimators = n_estimators,
-                        eta = eta, max_depth = d,
-                        scale_pos_weight = scale_pos_weight)
-model.fit(X, y)
-with open(output_file, 'wb') as f_out:
-    pickle.dump((model), f_out)
+if __name__ == "__main__":
+    df = pd.read_csv(data_file)
+    df.columns = df.columns.str.lower().str.replace(' ', '_')
+    df_full_train, df_test = train_test_split(df, test_size=0.2, random_state=1)
+    
+    print("Doing validation")
+    validation_scores = validate(df_full_train, n_splits, xgb_params)
+    print(f"Validation AUC scores: {validation_scores}")
+    
+    print("Training the final model")
+    dv, model = train_model(df_full_train, xgb_params)
+    y_test = df_test["class"].values
+    y_pred = predict_model(dv, model, df_test)
+    auc = roc_auc_score(y_test, y_pred)
+    print(f"Final model AUC: {auc}")
 
-print(f'the model is saved to {output_file}')
+    with open(output_file, 'wb') as f_out:
+        pickle.dump((dv, model), f_out)
+
+    print(f"The model is saved to {output_file}")
