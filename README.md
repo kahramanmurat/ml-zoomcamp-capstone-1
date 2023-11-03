@@ -59,7 +59,6 @@ docker run -it -p 9696:9696 {build-tag}
 By default, the patient parameters are set at:
 
 ```
-    "id": 1000.0,
     "v1": -0.2639028698066069,
     "v2": -0.1525732764811688,
     "v3": 0.1827283788981841,
